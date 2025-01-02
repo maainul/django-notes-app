@@ -2,7 +2,8 @@ version: "3.9"
 
 services:
   web:
-    image: "maainul/notes-app:latest"
+    build:
       context: .
+    image: "maainul/notes-app:latest"
     ports:
       - "8000:8000"
