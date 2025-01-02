@@ -42,7 +42,7 @@ pipeline {
         stage('Deploy') {
             steps {
                 echo "Deploying the application..."
-                sh 'docker compose up -d || echo "Deployment failed!"'
+                sh 'docker compose down && docker compose up -d || echo "Deployment failed!"'
                 echo "Application deployed!"
             }
         }
