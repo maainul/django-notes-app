@@ -39,10 +39,10 @@ pipeline {
             steps {
                 echo "Cleaning up Docker resources..."
                 sh '''
-                docker compose down || true
+                docker ps -q | xargs -r docker stop || true
+                docker ps -aq | xargs -r docker rm || true
                 docker system prune -f || true
                 docker volume prune -f || true
-                docker ps -aq | xargs -r docker rm || true
                 docker network prune -f || true
                 '''
                 echo "Starting the application..."
