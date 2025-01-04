@@ -35,15 +35,19 @@ pipeline {
                }
             }
         }
+
         stage('Deploy') {
-            // when{
-            //     branch 'master' // Only deploy from the master branch
-            // }
             steps {
-                echo "Deploying the application..."
-                sh 'docker compose down && docker compose up -d || echo "Deployment failed!"'
-                echo "Application deployed!"
+                echo "Cleaning up Docker resources..."
+                sh '''
+                docker compose down --volumes || true
+                docker ps -aq | xargs -r docker rm || true
+                docker network prune -f || true
+                docker volume prune -f || true
+                '''
+                echo "Starting the application..."
+                sh 'docker compose up -d'
             }
-        }
+        }  
     }
 }
