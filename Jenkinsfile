@@ -6,15 +6,15 @@ pipeline {
         stage('Clone') {
             steps {
                 script {
-                   clone("https://github.com/maainul/django-notes-app.git", env.BRANCH_NAME)
+                    clone("https://github.com/maainul/django-notes-app.git", env.BRANCH_NAME)
                 }
             }
         }
         stage('Build') {
             steps {
-               script{
-                  docker_build("maainul", "notes-app", env.BRANCH_NAME)
-               }
+                script {
+                    docker_build("maainul", "notes-app", env.BRANCH_NAME)
+                }
             }
         }
         stage('Test') {
@@ -25,29 +25,38 @@ pipeline {
         }
         stage('Push') {
             steps {
-               script{
-                try{
-                   docker_push("maainul", "notes-app", env.BRANCH_NAME)
-                } catch (Exception e){
-                    echo "docker push failed: ${e}"
-                     currentBuild.result = 'UNSTABLE'
+                script {
+                    try {
+                        docker_push("maainul", "notes-app", env.BRANCH_NAME)
+                    } catch (Exception e) {
+                        echo "docker push failed: ${e}"
+                        currentBuild.result = 'UNSTABLE'
+                    }
                 }
-               }
             }
         }
-
         stage('Deploy') {
             steps {
                 echo "Cleaning up Docker resources..."
                 sh '''
-                docker compose down --volumes || true
+                docker compose down || true
+                docker system prune -f || true
+                docker volume prune -f || true
                 docker ps -aq | xargs -r docker rm || true
                 docker network prune -f || true
-                docker volume prune -f || true
                 '''
                 echo "Starting the application..."
-                sh 'docker compose up -d'
+                sh "BRANCH_NAME=${env.BRANCH_NAME} docker compose up -d"
             }
         }  
+    }
+    post {
+        always {
+            echo "Cleaning up workspace..."
+            cleanWs()
+        }
+        failure {
+            echo "Build failed, sending notifications..."
+        }
     }
 }
