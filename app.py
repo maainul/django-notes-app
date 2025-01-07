@@ -3,6 +3,10 @@ from flask import Flask
 app = Flask(__name__)
 
 
+@app.route('/show')
+def hello_world():
+    return 'Show, Mainul!'
+
 @app.route('/')
 def hello_mainul():
     return 'Hello, Mainul!'
@@ -14,6 +18,7 @@ def hello_master():
 @app.route('/hi')
 def hi_mainul():
     return 'Hi, Mainul!'
+
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=8000)
