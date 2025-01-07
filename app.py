@@ -2,9 +2,14 @@ from flask import Flask
 
 app = Flask(__name__)
 
+
 @app.route('/')
 def hello_mainul():
     return 'Hello, Mainul!'
+
+@app.route('/master')
+def hello_master():
+    return 'Hello, Mainul Master!'
 
 @app.route('/hi')
 def hi_mainul():
