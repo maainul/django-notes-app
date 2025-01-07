@@ -2,6 +2,6 @@ services:
   web:
     build:
       context: .
-    image: "maainul/notes-app:latest"
+    image: "maainul/notes-app:${BRANCH_NAME}"
     ports:
       - "8000:8000"
